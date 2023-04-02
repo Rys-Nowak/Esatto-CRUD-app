@@ -1,5 +1,10 @@
 import { db } from "./config.js";
 
+/**
+ * Read all customers' data from the database
+ *
+ * @returns {Promise<Array>} Array of customer objects
+ */
 export async function getCustomers() {
     const snapshot = await db
         .collection("customers")
@@ -15,6 +20,21 @@ export async function getCustomers() {
     });
 }
 
+/**
+ * Create a new customer to the database
+ *
+ * @param {string} name Customer's name
+ * @param {string} vatId Customer's VAT identification number
+ * @param {string} address Customer's address
+ *
+ * @typedef {Object} Customer
+ * @property {string} name Customer's name
+ * @property {string} vatId Customer's VAT identification number
+ * @property {string} address Customer's address
+ * @property {Date} creationDate Date of addition to the database
+ * @property {string} customerId Customer's ID
+ * @returns {Promise<Customer>} Added offer
+ */
 export async function postCustomer(name, vatId, address) {
     const customer = {
         name: name,
@@ -44,6 +64,23 @@ export async function postCustomer(name, vatId, address) {
     };
 }
 
+/**
+ * Update a customer's data in the database
+ *
+ * @param {string} id Customer's ID
+ * @param {Object} data Customer's data
+ * @param {string} data.name Customer's name
+ * @param {string} data.vatId Customer's VAT identification number
+ * @param {string} data.address Customer's address
+ *
+ * @typedef {Object} Customer
+ * @property {string} name Customer's name
+ * @property {string} vatId Customer's VAT identification number
+ * @property {string} address Customer's address
+ * @property {Date} creationDate Date of addition to the database
+ * @property {string} customerId Customer's ID
+ * @returns {Promise<Customer>} Updated customer
+ */
 export async function updateCustomer(id, data) {
     const customer = {
         name: data.name,
@@ -62,6 +99,12 @@ export async function updateCustomer(id, data) {
     return customer;
 }
 
+/**
+ * Delete a customer from the database
+ * @param {string} id Customer's ID
+ * 
+ * @returns {Promise<void>}
+ */
 export async function deleteCustomer(id) {
     await db
         .collection("customers")
