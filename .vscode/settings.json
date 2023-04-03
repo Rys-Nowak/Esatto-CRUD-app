@@ -1,4 +1,0 @@
-{
-    "appService.defaultWebAppToDeploy": "undefined/subscriptions/bd7ece53-b998-4e94-bc64-1efb31ea181b/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/esatto-crud-app",
-    "appService.deploySubpath": "."
-}

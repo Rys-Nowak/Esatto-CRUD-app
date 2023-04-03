@@ -105,3 +105,6 @@ dist
 
 # Private key
 serviceAccountKey.json
+
+# vs code
+.vscode/
