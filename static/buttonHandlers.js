@@ -1,9 +1,12 @@
-const URL = "https://esatto-crud-app.azurewebsites.net/api/customers"
+const URL = "https://esatto-crud-app.azurewebsites.net/api/customers";
 // const URL =  "http://localhost:3000/api/customers";
 
 /**
  * Gets the values from the input fields and sends a POST request to the API
  * to create a new customer.
+ * If the name, address or VAT Identification Number fields are empty,
+ * displays an alert.
+ * If there is an error creating the customer, displays an alert.
  */
 function createNewCustomer() {
     document.getElementById("add").disabled = true;
@@ -50,6 +53,7 @@ function createNewCustomer() {
 
 /**
  * Displays all customers in the database.
+ * If there is an error fetching the customers, displays an alert.
  */
 async function displayCustomers() {
     document.getElementById("show").disabled = true;
@@ -145,6 +149,11 @@ async function editCustomer() {
         });
 }
 
+/**
+ * Deletes the customer with the given VAT Identification Number.
+ * If there is an error deleting the customer, displays an alert.
+ * @param {string} id - VAT Identification Number of the customer to delete
+ */
 function deleteCustomer(id) {
     document.getElementById("delete").disabled = true;
 
