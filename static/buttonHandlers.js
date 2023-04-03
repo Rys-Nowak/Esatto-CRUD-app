@@ -64,7 +64,10 @@ async function displayCustomers() {
             "Content-Type": "application/json",
         },
     })
-        .then((res) => res.json())
+        .then((res) => {
+            document.getElementById("show").disabled = false;
+            return res.json();
+        })
         .catch((error) => {
             document.getElementById("show").disabled = false;
             console.error("Error:", error);
@@ -85,7 +88,9 @@ async function displayCustomers() {
                 <td>${customer.vatId}</td>
                 <td>${customer.name}</td>
                 <td>${customer.address}</td>
-                <td>${new Date(customer.creationDate)}</td>
+                <td>${new Date(customer.creationDate).toLocaleDateString(
+                    "pl-PL"
+                )}</td>
                 <td><button onclick="deleteCustomer('${
                     customer.vatId
                 }')">Delete</button></td>
