@@ -1,10 +1,20 @@
+const URL = "https://esatto-crud-app.azurewebsites.net/api/customers"
+// const URL =  "http://localhost:3000/api/customers";
+
+/**
+ * Gets the values from the input fields and sends a POST request to the API
+ * to create a new customer.
+ */
 function createNewCustomer() {
+    document.getElementById("add").disabled = true;
+
     const name = document.getElementById("name").value;
     const address = document.getElementById("address").value;
     const vatId = document.getElementById("vatId").value;
 
     if (name === "" || address === "" || vatId === "") {
         alert("Please fill in all fields before submitting");
+        document.getElementById("add").disabled = false;
         return;
     }
 
@@ -12,7 +22,7 @@ function createNewCustomer() {
         `Creating customer ${name} with address ${address} and VAT ID ${vatId}`
     );
 
-    fetch("http://localhost:3000/api/customers", {
+    fetch(URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -32,13 +42,19 @@ function createNewCustomer() {
             window.location.reload();
         })
         .catch((error) => {
+            document.getElementById("add").disabled = false;
             console.error("Error:", error);
             alert("Error creating customer: ", error.message);
         });
 }
 
+/**
+ * Displays all customers in the database.
+ */
 async function displayCustomers() {
-    const customers = await fetch("http://localhost:3000/api/customers", {
+    document.getElementById("show").disabled = true;
+
+    const customers = await fetch(URL, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -46,6 +62,7 @@ async function displayCustomers() {
     })
         .then((res) => res.json())
         .catch((error) => {
+            document.getElementById("show").disabled = false;
             console.error("Error:", error);
             alert("Error fetching customers: ", error.message);
         });
@@ -76,7 +93,17 @@ async function displayCustomers() {
     document.getElementById("customers").innerHTML = customersString;
 }
 
+/**
+ * Gets the VAT Identification Number, name and address from the input fields
+ * and sends a PUT request to the API to update the customer with the given
+ * VAT Identification Number.
+ * If the name or address fields are empty, the corresponding field will not
+ * be updated.
+ * If the VAT Identification Number field is empty displays an alert.
+ */
 async function editCustomer() {
+    document.getElementById("edit").disabled = true;
+
     let name = document.getElementById("newName").value;
     let address = document.getElementById("newAddress").value;
     const vatId = document.getElementById("idToEdit").value;
@@ -84,6 +111,7 @@ async function editCustomer() {
     if (name === "") name = undefined;
     if (address === "") address = undefined;
     if (vatId === "") {
+        document.getElementById("edit").disabled = false;
         alert("Please fill in the VAT ID field before submitting");
         return;
     }
@@ -92,7 +120,7 @@ async function editCustomer() {
         `Updating customer with VAT ID ${vatId} to name ${name} and address ${address}`
     );
 
-    fetch(`http://localhost:3000/api/customers/${vatId}`, {
+    fetch(`${URL}/${vatId}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -111,13 +139,16 @@ async function editCustomer() {
             window.location.reload();
         })
         .catch((error) => {
+            document.getElementById("edit").disabled = false;
             console.error("Error:", error);
             alert("Error updating customer: ", error.message);
         });
 }
 
 function deleteCustomer(id) {
-    fetch(`http://localhost:3000/api/customers/${id}`, {
+    document.getElementById("delete").disabled = true;
+
+    fetch(`${URL}/${id}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -128,6 +159,7 @@ function deleteCustomer(id) {
             window.location.reload();
         })
         .catch((error) => {
+            document.getElementById("delete").disabled = false;
             console.error("Error:", error);
             alert("Error deleting customer: ", error.message);
         });

@@ -17,7 +17,7 @@
     <button id="add" onclick="createNewCustomer()">Add new customer</button>
     <hr>
     <h3> Read </h3>
-    <button id="view" onclick="displayCustomers()">Show all customers</button>
+    <button id="show" onclick="displayCustomers()">Show all customers</button>
     <div id="customers"></div>
     <hr>
     <h3> Update </h3>
@@ -27,14 +27,13 @@
     <div>
         <input type="text" label="name" placeholder="new name" id="newName">
         <input type="text" label="address" placeholder="new address" id="newAddress">
-        <button onclick="editCustomer()">Edit customer</button>
+        <button id="edit" onclick="editCustomer()">Edit customer</button>
     </div>
     <hr>
-
     <h3> Delete </h3>
     Edit customer with id:
     <input type="text" label="vat identification number" placeholder="vat identification number" id="idToDelete">
-    <button onclick='deleteCustomer(document.getElementById("idToDelete"))'>Delete</button>
+    <button id="delete" onclick='deleteCustomer(document.getElementById("idToDelete"))'>Delete</button>
 </body>
 
 </html>

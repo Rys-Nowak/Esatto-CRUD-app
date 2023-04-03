@@ -12,7 +12,10 @@ const __dirname = dirname(__filename);
 app.use("/static", express.static("./static/"));
 app.use(
     cors({
-        origin: "*",
+        origin:
+            process.env.NODE_ENV === "production"
+                ? "https://esatto-crud-app.azurewebsites.net"
+                : "http://127.0.0.1:3000",
         methods: ["GET", "PUT", "POST", "DELETE"],
     })
 );
