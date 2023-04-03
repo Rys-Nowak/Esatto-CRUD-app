@@ -1,5 +1,5 @@
 const URL = "https://esatto-crud-app.azurewebsites.net/api/customers";
-// const URL =  "http://localhost:3000/api/customers";
+// const URL = "http://localhost:3000/api/customers";
 
 /**
  * Gets the values from the input fields and sends a POST request to the API
@@ -46,8 +46,8 @@ function createNewCustomer() {
         })
         .catch((error) => {
             document.getElementById("add").disabled = false;
-            console.error("Error:", error);
-            alert("Error creating customer: ", error.message);
+            console.error(error);
+            alert("Error creating customer: " + error);
         });
 }
 
@@ -70,17 +70,17 @@ async function displayCustomers() {
         })
         .catch((error) => {
             document.getElementById("show").disabled = false;
-            console.error("Error:", error);
-            alert("Error fetching customers: ", error.message);
+            console.error(error);
+            alert("Error fetching customers: " + error);
         });
 
     let customersString =
         "<table>\
             <tr>\
-                <th>VAT identification number</th>\
-                <th>Name</th>\
-                <th>Address</th>\
-                <th>Creation date</th>\
+                <td><b>VAT identification number</b></td>\
+                <td><b>Name</b></td>\
+                <td><b>Address</b></td>\
+                <td><b>Creation date</b></td>\
             </tr>";
     for (const customer of customers) {
         customersString += `
@@ -139,7 +139,10 @@ async function editCustomer() {
             address,
         }),
     })
-        .then((res) => res.json())
+        .then((res) => {
+            if (res.status !== 200) throw new Error("Customer not found");
+            else return res.json();
+        })
         .then((data) => {
             console.log("Success:", data);
             alert(
@@ -149,8 +152,8 @@ async function editCustomer() {
         })
         .catch((error) => {
             document.getElementById("edit").disabled = false;
-            console.error("Error:", error);
-            alert("Error updating customer: ", error.message);
+            console.error(error);
+            alert("Error updating customer: " + error);
         });
 }
 
@@ -168,13 +171,16 @@ function deleteCustomer(id) {
             "Content-Type": "application/json",
         },
     })
-        .then(() => {
+        .then((res) => {
+            if (res.status !== 200) {
+                throw new Error("Customer not found");
+            }
             alert(`Customer with id ${id} deleted successfully`);
             window.location.reload();
         })
         .catch((error) => {
             document.getElementById("delete").disabled = false;
-            console.error("Error:", error);
-            alert("Error deleting customer: ", error.message);
+            console.error(error);
+            alert("Error deleting customer: " + error);
         });
 }

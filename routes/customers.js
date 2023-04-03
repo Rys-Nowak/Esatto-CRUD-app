@@ -94,7 +94,7 @@ export function postCustomer(req, res) {
  * @property {Date} creationDate Date of addition to the database
  * @returns {Customer} Updated customer
  */
-export async function updateCustomer(req, res) {
+export function updateCustomer(req, res) {
     const id = req.params.id;
     const data = req.body;
     const customer = {
@@ -102,8 +102,7 @@ export async function updateCustomer(req, res) {
         address: data.address,
     };
 
-    await db
-        .collection("customers")
+    db.collection("customers")
         .doc(id)
         .get()
         .then(async (docSnap) => {
@@ -112,26 +111,28 @@ export async function updateCustomer(req, res) {
                     .collection("customers")
                     .doc(id)
                     .update(customer)
+                    .then(() => {
+                        db.collection("customers")
+                            .doc(id)
+                            .get()
+                            .then((docSnap) => {
+                                res.send({
+                                    ...docSnap.data(),
+                                    creationDate: docSnap
+                                        .data()
+                                        .creationDate?.toDate(),
+                                });
+                            })
+                            .catch((err) => {
+                                res.status(500).send({ message: err.message });
+                            });
+                    })
                     .catch((err) => {
                         res.status(500).send({ message: err.message });
                     });
             } else {
                 res.status(404).send({ message: "Customer not found" });
             }
-        })
-        .catch((err) => {
-            res.status(500).send({ message: err.message });
-        });
-
-    await db
-        .collection("customers")
-        .doc(id)
-        .get()
-        .then((docSnap) => {
-            res.send({
-                ...docSnap.data(),
-                creationDate: docSnap.data().creationDate?.toDate(),
-            });
         })
         .catch((err) => {
             res.status(500).send({ message: err.message });
@@ -145,17 +146,30 @@ export async function updateCustomer(req, res) {
  * @param {express.Response} res
  * @param {string} req.params.id Customer's VAT identification number
  */
-export async function deleteCustomer(req, res) {
+export function deleteCustomer(req, res) {
     const id = req.params.id;
-    await db
-        .collection("customers")
+
+    db.collection("customers")
         .doc(id)
-        .delete()
+        .get()
+        .then((docSnap) => {
+            if (!docSnap.exists) {
+                res.status(404).send({ message: "Customer not found" });
+            } else {
+                db.collection("customers")
+                    .doc(id)
+                    .delete()
+                    .then(() => {
+                        res.sendStatus(200);
+                    })
+                    .catch((err) => {
+                        res.status(500).send({ message: err.message });
+                    });
+            }
+        })
         .catch((err) => {
             res.status(500).send({ message: err.message });
         });
-
-    res.sendStatus(200);
 }
 
 router.post("/", postCustomer);
