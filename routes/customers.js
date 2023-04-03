@@ -9,7 +9,12 @@ const router = express.Router();
  * @param {express.Request} req
  * @param {express.Response} res
  *
- * @returns {Promise<Array>} Array of customer objects
+ * @typedef {Object} Customer
+ * @property {string} name Customer's name
+ * @property {string} vatId Customer's VAT identification number
+ * @property {string} address Customer's address
+ * @property {Date} creationDate Date of addition to the database
+ * @returns {Array<Customer>} Array of Customer objects
  */
 export async function getCustomers(req, res) {
     const snapshot = await db
@@ -43,10 +48,9 @@ export async function getCustomers(req, res) {
  * @property {string} vatId Customer's VAT identification number
  * @property {string} address Customer's address
  * @property {Date} creationDate Date of addition to the database
- * @property {string} customerId Customer's ID
- * @returns {Promise<Customer>} Added offer
+ * @returns {Customer} Added customer
  */
-export async function postCustomer(req, res) {
+export function postCustomer(req, res) {
     const customer = {
         name: req.body.name,
         vatId: req.body.vatId,
@@ -54,25 +58,24 @@ export async function postCustomer(req, res) {
         address: req.body.address,
     };
 
-    const docRef = await db
-        .collection("customers")
-        .add(customer)
-        .catch((err) => {
-            res.send({ message: err.message });
+    db.collection("customers")
+        .doc(customer.vatId)
+        .get()
+        .then((doc) => {
+            if (doc.exists) {
+                res.status(400).send({ message: "Customer already exists" });
+            } else {
+                db.collection("customers")
+                    .doc(customer.vatId)
+                    .set(customer)
+                    .then(() => {
+                        res.send(customer);
+                    })
+                    .catch((err) => {
+                        res.send({ message: err.message });
+                    });
+            }
         });
-
-    await db
-        .collection("customers")
-        .doc(docRef.id)
-        .update({ customerId: docRef.id })
-        .catch((err) => {
-            res.status(500).send({ message: err.message });
-        });
-
-    res.send({
-        ...customer,
-        customerId: docRef.id,
-    });
 }
 
 /**
@@ -80,26 +83,22 @@ export async function postCustomer(req, res) {
  * If there is an error, sends 500 status code and error message
  * @param {express.Request} req
  * @param {express.Response} res
- * @param {string} id Customer's ID
- * @param {Object} data Customer's data
- * @param {string} data.name Customer's name
- * @param {string} data.vatId Customer's VAT identification number
- * @param {string} data.address Customer's address
+ * @param {string} req.body.name Customer's name
+ * @param {string} req.body.address Customer's address
+ * @property {string} req.params.id Customer's VAT identification number
  *
  * @typedef {Object} Customer
- * @property {string} req.body.name Customer's name
- * @property {string} req.body.vatId Customer's VAT identification number
- * @property {string} req.body.address Customer's address
- * @property {Date} req.body.creationDate Date of addition to the database
- * @property {string} req.params.id Customer's ID
- * @returns {Promise<Customer>} Updated customer
+ * @property {string} name Customer's name
+ * @property {string} vatId Customer's VAT identification number
+ * @property {string} address Customer's address
+ * @property {Date} creationDate Date of addition to the database
+ * @returns {Customer} Updated customer
  */
 export async function updateCustomer(req, res) {
     const id = req.params.id;
     const data = req.body;
     const customer = {
         name: data.name,
-        vatId: data.vatId,
         address: data.address,
     };
 
@@ -124,7 +123,19 @@ export async function updateCustomer(req, res) {
             res.status(500).send({ message: err.message });
         });
 
-    res.send(customer);
+    await db
+        .collection("customers")
+        .doc(id)
+        .get()
+        .then((docSnap) => {
+            res.send({
+                ...docSnap.data(),
+                creationDate: docSnap.data().creationDate?.toDate(),
+            });
+        })
+        .catch((err) => {
+            res.status(500).send({ message: err.message });
+        });
 }
 
 /**
@@ -132,9 +143,7 @@ export async function updateCustomer(req, res) {
  * If there is an error, sends 500 status code and error message
  * @param {express.Request} req
  * @param {express.Response} res
- * @param {string} req.params.id Customer's ID
- *
- * @returns {Promise<void>}
+ * @param {string} req.params.id Customer's VAT identification number
  */
 export async function deleteCustomer(req, res) {
     const id = req.params.id;

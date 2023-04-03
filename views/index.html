@@ -10,22 +10,31 @@
 </head>
 
 <body>
+    <h3> Create </h3>
+    <input type="text" label="name" placeholder="name" id="name">
+    <input type="text" label="address" placeholder="address" id="address">
+    <input type="text" label="vat identification number" placeholder="vat identification number" id="vatId">
+    <button id="add" onclick="createNewCustomer()">Add new customer</button>
+    <hr>
+    <h3> Read </h3>
+    <button id="view" onclick="displayCustomers()">Show all customers</button>
+    <div id="customers"></div>
+    <hr>
+    <h3> Update </h3>
+    Edit customer with id:
+    <input type="text" label="vat identification number" placeholder="vat identification number" id="idToEdit">
+    <br><br>
     <div>
-        <h3> Create </h3>
-        <input type="text" label="name" placeholder="name" id="name">
-        <input type="text" label="address" placeholder="address" id="address">
-        <input type="text" label="vat identification number" placeholder="vat identification number" id="vatId">
-        <button id="add" onclick="getNewCustomerData()">Add new customer</button>
+        <input type="text" label="name" placeholder="new name" id="newName">
+        <input type="text" label="address" placeholder="new address" id="newAddress">
+        <button onclick="editCustomer()">Edit customer</button>
     </div>
-    <div>
-        <button id="edit">Edit</button>
-    </div>
-    <div>
-        <button id="delete">Delete</button>
-    </div>
-    <div>
-        <button id="view">View</button>
-    </div>
+    <hr>
+
+    <h3> Delete </h3>
+    Edit customer with id:
+    <input type="text" label="vat identification number" placeholder="vat identification number" id="idToDelete">
+    <button onclick='deleteCustomer(document.getElementById("idToDelete"))'>Delete</button>
 </body>
 
 </html>
