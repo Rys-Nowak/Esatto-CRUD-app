@@ -2,20 +2,23 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import express, { urlencoded } from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 
 import customersRouter from "./routes/customers.js";
 
+dotenv.config();
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const allowedOrigin =
+    process.env.NODE_ENV === "production"
+        ? process.env.ALLOWED_ORIGIN_PROD
+        : process.env.ALLOWED_ORIGIN_DEV;
 
 app.use("/static", express.static("./static/"));
 app.use(
     cors({
-        origin:
-            process.env.NODE_ENV === "production"
-                ? "https://esatto-crud-app.azurewebsites.net"
-                : "http://127.0.0.1:3000",
+        origin: allowedOrigin,
         methods: ["GET", "PUT", "POST", "DELETE"],
     })
 );
@@ -27,6 +30,6 @@ app.get("/", (req, res) => {
 });
 app.use("/api/customers", customersRouter);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => console.log(`App started on port ${PORT}`));

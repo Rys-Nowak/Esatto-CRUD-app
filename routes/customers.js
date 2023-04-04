@@ -1,7 +1,14 @@
-import { db } from "../firebase/config.js";
 import express from "express";
+import dotenv from "dotenv";
+import { db } from "../firebase/config.js";
+import { privatizeEndpoint } from "../middlewares/privatization.js";
 
+dotenv.config();
 const router = express.Router();
+const allowedOrigin =
+    process.env.NODE_ENV === "production"
+        ? process.env.ALLOWED_ORIGIN_PROD
+        : process.env.ALLOWED_ORIGIN_DEV;
 
 /**
  * Reads all customers' data from the database
@@ -16,7 +23,7 @@ const router = express.Router();
  * @property {Date} creationDate Date of addition to the database
  * @returns {Array<Customer>} Array of Customer objects
  */
-export async function getCustomers(req, res) {
+async function getCustomers(req, res) {
     const snapshot = await db
         .collection("customers")
         .get()
@@ -50,7 +57,7 @@ export async function getCustomers(req, res) {
  * @property {Date} creationDate Date of addition to the database
  * @returns {Customer} Added customer
  */
-export function postCustomer(req, res) {
+function postCustomer(req, res) {
     const customer = {
         name: req.body.name,
         vatId: req.body.vatId,
@@ -94,7 +101,7 @@ export function postCustomer(req, res) {
  * @property {Date} creationDate Date of addition to the database
  * @returns {Customer} Updated customer
  */
-export function updateCustomer(req, res) {
+function updateCustomer(req, res) {
     const id = req.params.id;
     const data = req.body;
     const customer = {
@@ -146,7 +153,7 @@ export function updateCustomer(req, res) {
  * @param {express.Response} res
  * @param {string} req.params.id Customer's VAT identification number
  */
-export function deleteCustomer(req, res) {
+function deleteCustomer(req, res) {
     const id = req.params.id;
 
     db.collection("customers")
@@ -172,9 +179,9 @@ export function deleteCustomer(req, res) {
         });
 }
 
-router.post("/", postCustomer);
+router.post("/", privatizeEndpoint(allowedOrigin), postCustomer);
 router.get("/", getCustomers);
-router.put("/:id", updateCustomer);
-router.delete("/:id", deleteCustomer);
+router.put("/:id", privatizeEndpoint(allowedOrigin), updateCustomer);
+router.delete("/:id", privatizeEndpoint(allowedOrigin), deleteCustomer);
 
 export default router;
