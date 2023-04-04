@@ -38,6 +38,7 @@ function createNewCustomer() {
     })
         .then((res) => {
             if (res.status === 200) return res.json();
+            else if (res.status === 403) throw new Error("Unauthorized");
             else if (res.status === 400)
                 throw new Error("Customer already exists");
             else if (res.status === 500) throw new Error("Server error");
@@ -146,6 +147,7 @@ async function editCustomer() {
     })
         .then((res) => {
             if (res.status === 200) return res.json();
+            else if (res.status === 403) throw new Error("Unauthorized");
             else if (res.status === 404) throw new Error("Customer not found");
             else if (res.status === 500) throw new Error("Server error");
             else throw new Error("Network error");
@@ -180,6 +182,7 @@ function deleteCustomer(id) {
     })
         .then((res) => {
             if (res.status === 404) throw new Error("Customer not found");
+            else if (res.status === 403) throw new Error("Unauthorized");
             else if (res.status === 500) throw new Error("Server error");
             else if (res.status !== 200) throw new Error("Network error");
 
