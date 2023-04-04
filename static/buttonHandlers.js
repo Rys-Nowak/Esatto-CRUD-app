@@ -36,7 +36,13 @@ function createNewCustomer() {
             vatId,
         }),
     })
-        .then((res) => res.json())
+        .then((res) => {
+            if (res.status === 200) return res.json();
+            else if (res.status === 400)
+                throw new Error("Customer already exists");
+            else if (res.status === 500) throw new Error("Server error");
+            else throw new Error("Network error");
+        })
         .then((data) => {
             console.log("Success:", data);
             alert(
@@ -59,14 +65,13 @@ async function displayCustomers() {
     document.getElementById("show").disabled = true;
 
     const customers = await fetch(URL, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
     })
         .then((res) => {
             document.getElementById("show").disabled = false;
-            return res.json();
+            if (res.status === 200) return res.json();
+            else if (res.status === 500) throw new Error("Server error");
+            else throw new Error("Network error");
         })
         .catch((error) => {
             document.getElementById("show").disabled = false;
@@ -74,7 +79,7 @@ async function displayCustomers() {
             alert("Error fetching customers: " + error);
         });
 
-    let customersString =
+    let customersTable =
         "<table>\
             <tr>\
                 <td><b>VAT identification number</b></td>\
@@ -83,7 +88,7 @@ async function displayCustomers() {
                 <td><b>Creation date</b></td>\
             </tr>";
     for (const customer of customers) {
-        customersString += `
+        customersTable += `
             <tr>
                 <td>${customer.vatId}</td>
                 <td>${customer.name}</td>
@@ -97,9 +102,9 @@ async function displayCustomers() {
             </tr>
         `;
     }
-    customersString += "</table>";
+    customersTable += "</table>";
 
-    document.getElementById("customers").innerHTML = customersString;
+    document.getElementById("customers").innerHTML = customersTable;
 }
 
 /**
@@ -140,8 +145,10 @@ async function editCustomer() {
         }),
     })
         .then((res) => {
-            if (res.status !== 200) throw new Error("Customer not found");
-            else return res.json();
+            if (res.status === 200) return res.json();
+            else if (res.status === 404) throw new Error("Customer not found");
+            else if (res.status === 500) throw new Error("Server error");
+            else throw new Error("Network error");
         })
         .then((data) => {
             console.log("Success:", data);
@@ -172,9 +179,10 @@ function deleteCustomer(id) {
         },
     })
         .then((res) => {
-            if (res.status !== 200) {
-                throw new Error("Customer not found");
-            }
+            if (res.status === 404) throw new Error("Customer not found");
+            else if (res.status === 500) throw new Error("Server error");
+            else if (res.status !== 200) throw new Error("Network error");
+
             alert(`Customer with id ${id} deleted successfully`);
             window.location.reload();
         })
