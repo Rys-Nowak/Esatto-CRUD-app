@@ -1,3 +1,7 @@
-A simple crud app
+### A simple crud app
 
 Click <a href="https://esatto-crud-app.azurewebsites.net">here</a> to try it out
+
+#### Technologies
+* Express
+* Firebase Firestore
