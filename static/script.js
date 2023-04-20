@@ -1,5 +1,5 @@
-const URL = "https://esatto-crud-app.azurewebsites.net/api/customers";
-// const URL = "http://localhost:3000/api/customers";
+// const URL = "https://esatto-crud-app.azurewebsites.net/api/customers";
+const URL = "http://localhost:3000/api/customers";
 
 /**
  * Gets the values from the input fields and sends a POST request to the API

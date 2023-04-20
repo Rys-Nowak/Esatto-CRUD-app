@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import { db } from "../firebase/config.js";
-import { privatizeEndpoint } from "../middlewares/privatization.js";
 
 dotenv.config();
 const router = express.Router();
@@ -179,9 +178,9 @@ function deleteCustomer(req, res) {
         });
 }
 
-router.post("/", privatizeEndpoint(allowedOrigin), postCustomer);
+router.post("/", postCustomer);
 router.get("/", getCustomers);
-router.put("/:id", privatizeEndpoint(allowedOrigin), updateCustomer);
-router.delete("/:id", privatizeEndpoint(allowedOrigin), deleteCustomer);
+router.put("/:id", updateCustomer);
+router.delete("/:id", deleteCustomer);
 
 export default router;

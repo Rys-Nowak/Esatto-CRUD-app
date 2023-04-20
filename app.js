@@ -3,8 +3,8 @@ import { dirname } from "path";
 import express, { urlencoded } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-
 import customersRouter from "./routes/customers.js";
+import { restrict } from "./middlewares/restriction.js"; 
 
 dotenv.config();
 const app = express();
@@ -28,7 +28,7 @@ app.use(urlencoded({ extended: false }));
 app.get("/", (req, res) => {
     res.sendFile("index.html", { root: __dirname + "/views" });
 });
-app.use("/api/customers", customersRouter);
+app.use("/api/customers", restrict, customersRouter);
 
 const PORT = process.env.PORT || 3000;
 
